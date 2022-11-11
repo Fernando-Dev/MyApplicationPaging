@@ -49,88 +49,88 @@ class MainActivity : AppCompatActivity() {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    /**
+                     * pegando o gerenciador do layout da lista
+                     */
+                    val manager = recyclerView.layoutManager as LinearLayoutManager
+
+                    /**
+                     * pegando o ultimo item da lista
+                     */
+                    val lastItem = manager.findLastVisibleItemPosition()
+
+                    /**
+                     * pegando a quantidade de itens na lista
+                     */
+                    val itemCount = manager.itemCount
+
+                    /**
+                     * quando scrollar a lista e chegar no ultimo item
+                     * fazemos uma subtracao para validar a condição
+                     * para buscar novos itens
+                     */
+                    if (lastItem == itemCount.minus(1)) {
+
+                        /**
+                         * adicionamos mais um no contador de paginacao
+                         */
+                        lastPageIndex += 1
+
+                        /**
+                         * pegamos uma nova lista
+                         */
+                        val list = Repository.getPageForIndex(lastPageIndex)
+
+                        /**
+                         * se a lista não estiver vazia fazemos a atualização da recycler
+                         */
+                        if (list.isNotEmpty()) {
+                            /**
+                             * limpamos a lista auxiliar
+                             */
+                            listAux.clear()
+
+                            /**
+                             * adicionamos a lista ja carregada no adapter
+                             */
+                            listAux.addAll(mainAdapter.list)
+
+                            /**
+                             * adicionamos a nova lista
+                             */
+                            listAux.addAll(list)
+
+                            /**
+                             * limpamos a lista que ja estava carregada no adapter
+                             */
+                            mainAdapter.list.clear()
+
+                            /**
+                             * adicionamos a lista auxiliar com os dados atualizados
+                             */
+                            mainAdapter.list.addAll(listAux)
+
+                            /**
+                             * notificamos o adapter para adicionar novos itens a recycler
+                             * depois do ultimo item da lista atual
+                             * por isso pego o index do ultimo item e adiciono mais 1
+                             * e passo o tamanho da lista atualmente
+                             */
+                            mainAdapter.notifyItemRangeInserted(lastItem.plus(1), itemCount)
+
+                            /**
+                             * aqui só atualizo os contadores
+                             */
+                            setTotal(mainAdapter.list.size)
+                            messageCount(list.size)
+                        }
+                    }
+                }
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                /**
-                 * pegando o gerenciador do layout da lista
-                 */
-                val manager = recyclerView.layoutManager as LinearLayoutManager
-
-                /**
-                 * pegando o ultimo item da lista
-                 */
-                val lastItem = manager.findLastVisibleItemPosition()
-
-                /**
-                 * pegando a quantidade de itens na lista
-                 */
-                val itemCount = recyclerView.adapter?.itemCount
-
-                /**
-                 * quando scrollar a lista e chegar no ultimo item
-                 * se o scroll for positivo no eixo y
-                 * isso quer dizer se o scroll foi para cima
-                 * e fazemos uma subtracao para validar a condição
-                 * para buscar novos itens
-                 */
-                if (lastItem == itemCount?.minus(1) && dy > 0) {
-
-                    /**
-                     * adicionamos mais um no contador de paginacao
-                     */
-                    lastPageIndex += 1
-
-                    /**
-                     * pegamos uma nova lista
-                     */
-                    val list = Repository.getPageForIndex(lastPageIndex)
-
-                    /**
-                     * se a lista não estiver vazia fazemos a atualização da recycler
-                     */
-                    if (list.isNotEmpty()) {
-                        /**
-                         * limpamos a lista auxiliar
-                         */
-                        listAux.clear()
-
-                        /**
-                         * adicionamos a lista ja carregada no adapter
-                         */
-                        listAux.addAll(mainAdapter.list)
-
-                        /**
-                         * adicionamos a nova lista
-                         */
-                        listAux.addAll(list)
-
-                        /**
-                         * limpamos a lista que ja estava carregada no adapter
-                         */
-                        mainAdapter.list.clear()
-
-                        /**
-                         * adicionamos a lista auxiliar com os dados atualizados
-                         */
-                        mainAdapter.list.addAll(listAux)
-
-                        /**
-                         * notificamos o adapter para adicionar novos itens a recycler
-                         * depois do ultimo item da lista atual
-                         * por isso pego o index do ultimo item e adiciono mais 1
-                         * e passo o tamanho da lista atualmente
-                         */
-                        mainAdapter.notifyItemRangeInserted(lastItem.plus(1), itemCount)
-
-                        /**
-                         * aqui só atualizo os contadores
-                         */
-                        setTotal(mainAdapter.list.size)
-                        messageCount(list.size)
-                    }
-                }
             }
         })
 
