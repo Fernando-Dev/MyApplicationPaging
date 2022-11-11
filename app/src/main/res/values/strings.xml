@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My Application Paging</string>
+    <string name="total">Total %s</string>
+</resources>
